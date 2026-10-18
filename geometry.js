@@ -95,7 +95,7 @@
 
   function c64SidePath(x, y, p) {
     const D = p.depth, H = p.height;
-    return `M${x + 12},${y + H} Q${x},${y + H} ${x},${y + H - 12} Q${x},${y + H * .70} ${x + 14},${y + H * .62} L${x + D * .30},${y + H * .30} Q${x + D * .34},${y + H * .16} ${x + D * .43},${y + H * .14} L${x + D - 14},${y + H * .08} Q${x + D},${y + H * .08} ${x + D},${y + H * .25} L${x + D},${y + H - 12} Q${x + D},${y + H} ${x + D - 12},${y + H} Z`;
+    return `M${x + 12},${y + H} Q${x},${y + H} ${x},${y + H - 12} L${x},${y + H * .70} Q${x},${y + H * .58} ${x + 14},${y + H * .54} L${x + D - 14},${y + H * .08} Q${x + D},${y + H * .08} ${x + D},${y + H * .25} L${x + D},${y + H - 12} Q${x + D},${y + H} ${x + D - 12},${y + H} Z`;
   }
 
   function c64Perimeter(p) {
@@ -110,8 +110,8 @@
       }
       return length;
     };
-    const a=[12,H], b=[0,H-12], c=[14,H*.62], d=[D*.30,H*.30], e=[D*.43,H*.14], f=[D-14,H*.08], g=[D,H*.25], h=[D,H-12], i=[D-12,H];
-    return quad(a,[0,H],b) + quad(b,[0,H*.70],c) + line(c,d) + quad(d,[D*.34,H*.16],e) + line(e,f) + quad(f,[D,H*.08],g) + line(g,h) + quad(h,[D,H],i) + line(i,a);
+    const a=[12,H], b=[0,H-12], c=[0,H*.70], d=[14,H*.54], e=[D-14,H*.08], f=[D,H*.25], g=[D,H-12], h=[D-12,H];
+    return quad(a,[0,H],b) + line(b,c) + quad(c,[0,H*.58],d) + line(d,e) + quad(e,[D,H*.08],f) + line(f,g) + quad(g,[D,H],h) + line(h,a);
   }
 
   function hingeBand(x, y, width, height, slot, gap) {
@@ -140,7 +140,7 @@
     ];
     cuts.push(label(25, 15 + p.height - 8, 'Fianco sinistro'));
     cuts.push(label(25 + p.depth + gap, 15 + p.height - 8, 'Fianco destro'));
-    cuts.push(label(27, wrapY + 18, 'Fascia continua living hinge'));
+    cuts.push(label(27, wrapY + stripLength - 10, 'Fascia continua living hinge'));
 
     const topStart = wrapY + stripLength * .18;
     const keyboardX = 15 + (innerW - p.keyboardWidth) / 2;
@@ -148,7 +148,7 @@
     cuts.push(label(keyboardX + 8, topStart + 29, 'Apertura tastiera'));
 
     const band = Math.max(22, n(p.hingeBand ?? 28));
-    [wrapY + 24, wrapY + stripLength * .14, wrapY + stripLength * .60, wrapY + stripLength - band - 24]
+    [wrapY + 2, wrapY + 28, wrapY + stripLength * .46, wrapY + stripLength * .60]
       .forEach(by => cuts.push(`<g class="living-hinge">${hingeBand(15, by, innerW, band, n(p.hingeSlot ?? 34), n(p.hingeGap ?? 6))}</g>`));
 
     // Rear I/O openings, kept generic until the installed board is known.
