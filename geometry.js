@@ -32,9 +32,9 @@
     const D = p.depth, H = p.height;
     const overhang = n(p.deckOverhang ?? 35);
     return [
-      [overhang, H], [D, H], [D, H * .20], [D * .74, 0], [D * .20, 0],
-      [D * .10, H * .16], [D * .12, H * .49],
-      [0, H * .66], [overhang, H * .78]
+      [overhang, H], [D, H], [D, H * .06], [D * .94, 0], [D * .24, 0],
+      [D * .13, H * .16], [D * .11, H * .52],
+      [0, H * .68], [overhang, H * .82]
     ].map(([x, y]) => [f(x), f(y)]);
   }
 
@@ -89,6 +89,7 @@
     const errors = validate(p);
     if (errors.length) return { errors };
     const t = p.thickness, innerW = p.width - 2 * t, gap = 24;
+    const svgW = Math.max(1000, p.depth * 2 + gap + 30, p.width * 2 + 100);
     const side = sideProfile(p);
     const mon = monitorSize(p.monitor, p.ratio);
     const parts = [];
@@ -104,7 +105,7 @@
       slotLines.forEach(line => slotRects(line.sx, line.sy, line.len, t, p.finger, p.kerf)
         .forEach(r => cuts.push(`<rect class="cut" x="${r.x}" y="${r.y}" width="${r.width}" height="${r.height}"/>`)));
       const rearX = x + Math.min(p.depth * .62, n(p.deckDepth ?? p.depth * .42));
-      slotRectsAlong(x + 4, y + p.height * .66, rearX, y + p.height * .55, t, p.finger, p.kerf)
+      slotRectsAlong(x + 4, y + p.height * .68, rearX, y + p.height * .57, t, p.finger, p.kerf)
         .forEach(r => cuts.push(`<rect class="cut" x="${f(r.cx-r.width/2)}" y="${f(r.cy-r.height/2)}" width="${r.width}" height="${r.height}" transform="rotate(${r.angle} ${r.cx} ${r.cy})"/>`));
       cuts.push(label(x + 18, y + p.height - 10, `Fianco ${sideIndex + 1}`));
       parts.push({ name: `Fianco ${sideIndex + 1}`, width: p.depth, height: p.height, qty: 1 });
@@ -124,7 +125,7 @@
     let rowHeight = 0;
     panels.forEach(panel => {
       const ph = f(panel.h);
-      if (x + innerW + 40 > Math.max(1000, p.width * 2 + 100)) { x = 15; y += rowHeight + 55; rowHeight = 0; }
+      if (x + innerW + 40 > svgW) { x = 15; y += rowHeight + 55; rowHeight = 0; }
       cuts.push(`<path class="cut" d="${tabbedRectPath(x, y, innerW, ph, t, p.finger)}"/>`);
       cuts.push(label(x + 12, y + 18, panel.name));
 
@@ -151,7 +152,6 @@
     cuts.push(label(x + 12, y + 20, `Cornice monitor ${p.monitor}\" ${p.ratio}`));
     parts.push({ name: 'Cornice monitor', width: innerW, height: f(bezelH), qty: 1 });
 
-    const svgW = Math.max(1000, p.width * 2 + 100);
     const svgH = y + bezelH + 35;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgW}mm" height="${f(svgH)}mm" viewBox="0 0 ${svgW} ${f(svgH)}">
 <style>.cut{fill:none;stroke:#e23b2e;stroke-width:.2;vector-effect:non-scaling-stroke}.engrave{fill:#147d92;font:7px Arial,sans-serif}.sheet{fill:#f4efe4}</style>
