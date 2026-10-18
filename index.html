@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#11120f">
+  <title>BoxForge — piani laser parametrici</title>
+  <meta name="description" content="Genera piani SVG parametrici per arcade cabinet in MDF con incastri a pettine.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <a class="brand" href="#">BoxForge</a>
+    <span>Arcade cabinet · piano laser</span>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div>
+        <h1>Dal tuo schizzo al taglio laser.</h1>
+        <p>Imposta le quote, controlla i pezzi e scarica un SVG in millimetri. Profilo bartop, monitor PC e giunzioni per MDF.</p>
+      </div>
+      <figure><img src="assets/sketch-arcade.jpg" alt="Schizzo originale del cabinet arcade"><figcaption>Primo progetto: bartop due giocatori</figcaption></figure>
+    </section>
+
+    <section class="workspace" data-ui>
+      <form id="params">
+        <h2>Parametri</h2>
+        <fieldset>
+          <legend>Cabinet</legend>
+          <label>Larghezza <span><input name="width" type="number" min="300" max="1200" value="400"> mm</span></label>
+          <label>Altezza <span><input name="height" type="number" min="350" max="1600" value="500"> mm</span></label>
+          <label>Profondità <span><input name="depth" type="number" min="250" max="1000" value="400"> mm</span></label>
+        </fieldset>
+        <fieldset>
+          <legend>Materiale e incastri</legend>
+          <label>Spessore MDF <span><input name="thickness" type="number" min="2" max="20" step="0.1" value="5"> mm</span></label>
+          <label>Kerf laser <span><input name="kerf" type="number" min="0" max="1" step="0.01" value="0.15"> mm</span></label>
+          <label>Larghezza pettine <span><input name="finger" type="number" min="10" max="80" value="30"> mm</span></label>
+        </fieldset>
+        <fieldset>
+          <legend>Monitor e comandi</legend>
+          <label>Diagonale <span><input name="monitor" type="number" min="8" max="32" step="0.1" value="14"> pollici</span></label>
+          <label>Formato <select name="ratio"><option>4:3</option><option>5:4</option><option>16:9</option><option>16:10</option></select></label>
+          <label>Foro pulsanti <span><input name="button" type="number" min="16" max="40" value="28"> mm</span></label>
+        </fieldset>
+        <label class="upload">Sostituisci immagine di riferimento<input id="reference" type="file" accept="image/*"></label>
+        <button type="submit">Rigenera piano</button>
+        <button class="secondary" id="download" type="button">Scarica SVG</button>
+        <p id="status" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="output">
+        <div class="output-head"><div><h2>Piano di taglio</h2><p id="summary"></p></div><button id="fit" type="button">Adatta</button></div>
+        <div id="preview" tabindex="0" aria-label="Anteprima del piano SVG"></div>
+        <details><summary>Distinta pannelli</summary><table><thead><tr><th>Pezzo</th><th>Misura</th><th>Qtà</th></tr></thead><tbody id="parts"></tbody></table></details>
+      </div>
+    </section>
+
+    <section class="notice">
+      <h2>Prima del taglio</h2>
+      <p>Misura il monitor reale e fai una prova incastri sul tuo MDF: il valore di kerf cambia da macchina a macchina.</p>
+    </section>
+  </main>
+  <footer><strong>BoxForge</strong><span>Prototipo parametrico · Cyberfreak</span></footer>
+  <script src="geometry.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

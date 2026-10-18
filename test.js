@@ -1,0 +1,14 @@
+const fs = require('node:fs');
+const vm = require('node:vm');
+const assert = require('node:assert/strict');
+vm.runInThisContext(fs.readFileSync('geometry.js', 'utf8'));
+const p = { width:400, height:500, depth:400, thickness:5, kerf:.15, finger:30, monitor:14, ratio:'4:3', button:28 };
+const m = BoxForge.monitorSize(14, '4:3');
+assert(Math.abs(m.width - 284.48) < .1);
+const plan = BoxForge.makePlan(p);
+assert.deepEqual(plan.errors, []);
+assert.equal(plan.parts.length, 9);
+assert(plan.svg.includes('Fianco 1'));
+assert(plan.svg.includes('Cornice monitor'));
+assert(BoxForge.makePlan({ ...p, width:300, monitor:24 }).errors.length > 0);
+console.log(`ok: ${plan.parts.length} pezzi, SVG ${plan.svg.length} byte`);
