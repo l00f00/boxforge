@@ -19,6 +19,10 @@
     if (p.thickness < 2 || p.thickness > 20) errors.push('Spessore fuori intervallo 2–20 mm.');
     if (p.kerf < 0 || p.kerf > 1) errors.push('Kerf fuori intervallo 0–1 mm.');
     if (p.finger < p.thickness * 2) errors.push('Il pettine deve essere almeno il doppio dello spessore.');
+    const deckDepth = n(p.deckDepth ?? p.depth * .42);
+    const deckOverhang = n(p.deckOverhang ?? 35);
+    if (deckDepth < 120 || deckDepth > p.depth * .65) errors.push('Profondità plancia fuori intervallo utile.');
+    if (deckOverhang < 10 || deckOverhang > p.depth * .2) errors.push('Sporgenza plancia fuori intervallo utile.');
     const mon = monitorSize(p.monitor, p.ratio);
     if (mon.width + 40 > p.width - 2 * p.thickness) errors.push('Il monitor non entra nella larghezza impostata.');
     return errors;
@@ -26,9 +30,11 @@
 
   function sideProfile(p) {
     const D = p.depth, H = p.height;
+    const overhang = n(p.deckOverhang ?? 35);
     return [
-      [0, H], [D, H], [D, H * .20], [D * .74, 0], [D * .20, 0],
-      [D * .10, H * .16], [D * .10, H * .48], [0, H * .61]
+      [overhang, H], [D, H], [D, H * .20], [D * .74, 0], [D * .20, 0],
+      [D * .10, H * .16], [D * .12, H * .49],
+      [0, H * .66], [overhang, H * .78]
     ].map(([x, y]) => [f(x), f(y)]);
   }
 
@@ -63,6 +69,19 @@
     return out;
   }
 
+  function slotRectsAlong(x1, y1, x2, y2, t, pitch, kerf) {
+    const length = Math.hypot(x2 - x1, y2 - y1);
+    const bands = Math.max(3, Math.round(length / pitch));
+    const step = length / bands;
+    const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+    const out = [];
+    for (let i = 1; i < bands; i += 2) {
+      const at = (i + .5) / bands;
+      out.push({ cx: f(x1 + (x2 - x1) * at), cy: f(y1 + (y2 - y1) * at), width: f(step - kerf), height: f(t + kerf), angle: f(angle) });
+    }
+    return out;
+  }
+
   function circle(cx, cy, r) { return `<circle class="cut" cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}"/>`; }
   function label(x, y, text) { return `<text class="engrave" x="${f(x)}" y="${f(y)}">${text}</text>`; }
 
@@ -80,11 +99,13 @@
       cuts.push(`<path class="cut" d="${polygonPath(side, x, y)}"/>`);
       const slotLines = [
         { sx: x + 18, sy: y + p.height - 28, len: p.depth - 45 },
-        { sx: x + 12, sy: y + p.height * .61, len: p.depth * .43 },
         { sx: x + p.depth * .22, sy: y + 28, len: p.depth * .48 }
       ];
       slotLines.forEach(line => slotRects(line.sx, line.sy, line.len, t, p.finger, p.kerf)
         .forEach(r => cuts.push(`<rect class="cut" x="${r.x}" y="${r.y}" width="${r.width}" height="${r.height}"/>`)));
+      const rearX = x + Math.min(p.depth * .62, n(p.deckDepth ?? p.depth * .42));
+      slotRectsAlong(x + 4, y + p.height * .66, rearX, y + p.height * .55, t, p.finger, p.kerf)
+        .forEach(r => cuts.push(`<rect class="cut" x="${f(r.cx-r.width/2)}" y="${f(r.cy-r.height/2)}" width="${r.width}" height="${r.height}" transform="rotate(${r.angle} ${r.cx} ${r.cy})"/>`));
       cuts.push(label(x + 18, y + p.height - 10, `Fianco ${sideIndex + 1}`));
       parts.push({ name: `Fianco ${sideIndex + 1}`, width: p.depth, height: p.height, qty: 1 });
       x += p.depth + gap;
@@ -93,11 +114,11 @@
     y += p.height + 55; x = 15;
     const panels = [
       { name: 'Fondo', h: p.depth - 40 },
-      { name: 'Plancia comandi', h: p.depth * .34, controls: true },
+      { name: 'Plancia comandi inclinata', h: n(p.deckDepth ?? p.depth * .42), controls: true },
       { name: 'Schiena', h: p.height * .55 },
       { name: 'Tetto', h: p.depth * .46 },
       { name: 'Marquee', h: p.height * .16 },
-      { name: 'Frontale inferiore', h: p.height * .28, front: true }
+      { name: 'Fascia anteriore inclinata', h: p.height * .18 }
     ];
 
     let rowHeight = 0;
@@ -116,10 +137,7 @@
           [[0,-18],[34,-24],[68,-18],[0,18],[34,12],[68,18]].forEach(([dx,dy]) => cuts.push(circle(bx + dx, cy + dy, p.button / 2)));
           cuts.push(label(base - 70, y + ph - 10, `P${player + 1}`));
         });
-      }
-      if (panel.front) {
-        cuts.push(circle(x + innerW * .42, y + ph * .52, p.button / 2));
-        cuts.push(circle(x + innerW * .58, y + ph * .52, p.button / 2));
+        [-24, 0, 24].forEach(dx => cuts.push(circle(x + innerW * .5 + dx, y + ph * .24, Math.max(6, p.button * .3))));
       }
       parts.push({ name: panel.name, width: innerW, height: ph, qty: 1 });
       x += innerW + gap + t;

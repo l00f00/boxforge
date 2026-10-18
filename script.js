@@ -11,6 +11,7 @@
     const data = new FormData(form);
     return {
       width: Number(data.get('width')), height: Number(data.get('height')), depth: Number(data.get('depth')),
+      deckDepth: Number(data.get('deckDepth')), deckOverhang: Number(data.get('deckOverhang')),
       thickness: Number(data.get('thickness')), kerf: Number(data.get('kerf')), finger: Number(data.get('finger')),
       monitor: Number(data.get('monitor')), ratio: data.get('ratio'), button: Number(data.get('button'))
     };
