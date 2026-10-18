@@ -5,46 +5,53 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#11120f">
   <title>BoxForge — piani laser parametrici</title>
-  <meta name="description" content="Genera piani SVG parametrici per arcade cabinet in MDF con incastri a pettine.">
-  <link rel="stylesheet" href="styles.css">
+  <meta name="description" content="Genera piani SVG parametrici per contenitori in MDF tagliati al laser.">
+  <link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
   <header>
     <a class="brand" href="#">BoxForge</a>
-    <span>Arcade cabinet · piano laser</span>
+    <span>Contenitori · piano laser</span>
   </header>
 
   <main>
     <section class="intro">
       <div>
         <h1>Dal tuo schizzo al taglio laser.</h1>
-        <p>Imposta le quote, controlla i pezzi e scarica un SVG in millimetri. Profilo bartop, monitor PC e giunzioni per MDF.</p>
+        <p>Imposta le quote, controlla i pezzi e scarica un SVG in millimetri.</p>
       </div>
-      <figure><img src="assets/reference-fighting-cabinet.jpg" alt="Cabinet arcade bartop di riferimento"><figcaption>Modello Fighting · 540 × 780 × 640 mm</figcaption></figure>
+      <figure><img src="assets/commodore-64-reference.jpg" alt="Commodore 64 originale"><figcaption>Commodore 64 · Evan-Amos, pubblico dominio</figcaption></figure>
     </section>
 
     <section class="workspace" data-ui>
       <form id="params">
         <h2>Parametri</h2>
+        <label>Modello <select name="model"><option value="c64">Commodore 64</option><option value="arcade">Fighting arcade</option></select></label>
         <fieldset>
           <legend>Cabinet</legend>
-          <label>Larghezza <span><input name="width" type="number" min="300" max="1200" value="540"> mm</span></label>
-          <label>Altezza <span><input name="height" type="number" min="350" max="1600" value="780"> mm</span></label>
-          <label>Profondità <span><input name="depth" type="number" min="250" max="1000" value="640"> mm</span></label>
-          <label>Profondità plancia <span><input name="deckDepth" type="number" min="120" max="500" value="300"> mm</span></label>
-          <label>Sporgenza frontale <span><input name="deckOverhang" type="number" min="10" max="120" value="45"> mm</span></label>
+          <label>Larghezza <span><input name="width" type="number" min="300" max="1200" value="405"> mm</span></label>
+          <label>Altezza <span><input name="height" type="number" min="45" max="1600" value="75"> mm</span></label>
+          <label>Profondità <span><input name="depth" type="number" min="150" max="1000" value="205"> mm</span></label>
+          <label class="arcade-only">Profondità plancia <span><input name="deckDepth" type="number" min="120" max="500" value="300"> mm</span></label>
+          <label class="arcade-only">Sporgenza frontale <span><input name="deckOverhang" type="number" min="10" max="120" value="45"> mm</span></label>
         </fieldset>
         <fieldset>
           <legend>Materiale e incastri</legend>
           <label>Spessore MDF <span><input name="thickness" type="number" min="2" max="20" step="0.1" value="5"> mm</span></label>
           <label>Kerf laser <span><input name="kerf" type="number" min="0" max="1" step="0.01" value="0.15"> mm</span></label>
-          <label>Larghezza pettine <span><input name="finger" type="number" min="10" max="80" value="30"> mm</span></label>
+          <label class="arcade-only">Larghezza pettine <span><input name="finger" type="number" min="10" max="80" value="30"> mm</span></label>
         </fieldset>
-        <fieldset>
+        <fieldset class="arcade-only">
           <legend>Monitor e comandi</legend>
           <label>Diagonale <span><input name="monitor" type="number" min="8" max="32" step="0.1" value="14"> pollici</span></label>
           <label>Formato <select name="ratio"><option>4:3</option><option>5:4</option><option>16:9</option><option>16:10</option></select></label>
           <label>Foro pulsanti <span><input name="button" type="number" min="16" max="40" value="28"> mm</span></label>
+        </fieldset>
+        <fieldset class="c64-only">
+          <legend>Tastiera e living hinge</legend>
+          <label>Apertura tastiera <span><input name="keyboardWidth" type="number" min="220" max="500" value="330"> × <input name="keyboardDepth" type="number" min="70" max="220" value="120"> mm</span></label>
+          <label>Lunghezza taglio hinge <span><input name="hingeSlot" type="number" min="15" max="60" value="34"> mm</span></label>
+          <label>Passo hinge <span><input name="hingeGap" type="number" min="3" max="12" value="6"> mm</span></label>
         </fieldset>
         <label class="upload">Sostituisci immagine di riferimento<input id="reference" type="file" accept="image/*"></label>
         <button type="submit">Rigenera piano</button>
@@ -61,11 +68,11 @@
 
     <section class="notice">
       <h2>Prima del taglio</h2>
-      <p>Misura il monitor reale e fai una prova incastri sul tuo MDF: il valore di kerf cambia da macchina a macchina.</p>
+      <p>Fai una prova living hinge e kerf sul tuo MDF prima del taglio definitivo.</p>
     </section>
   </main>
   <footer><strong>BoxForge</strong><span>Prototipo parametrico · Cyberfreak</span></footer>
-  <script src="geometry.js?v=3"></script>
-  <script src="script.js?v=3"></script>
+  <script src="geometry.js?v=5"></script>
+  <script src="script.js?v=5"></script>
 </body>
 </html>
